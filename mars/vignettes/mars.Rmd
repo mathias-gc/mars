@@ -1,0 +1,94 @@
+---
+title: "mars"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mars}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Mars function
+
+### Description
+
+The function mars performs multivariate adaptive regression splines (MARS) analysis, which is a regression method that generates a piecewise linear function of basis functions.
+
+### Usage
+```{r, eval = FALSE}
+mars(formula, data, control = mars.control())
+```
+
+### Arguments
+
+`formula` an object which specifies the model to be fitted.
+
+`data` a data frame containing the variables used in formula.
+
+`control` a list of named elements specifying MARS model tuning parameters. Set to `mars.control()` which defaults to the following parameters:
+
+```{r, eval = FALSE}
+# mars.control() parameter defaults
+Mmax = 2
+d = 3
+trace = FALSE
+```
+
+
+### Details
+
+The function mars first constructs the MARS basis functions by performing a forward and then a backward algorithm, using fwd_stepwise and bwd_stepwise functions, respectively. Then, it fits a linear regression model using the constructed basis functions.
+
+The forward algorithm is ran through the function fwd_stepwise() which returns 3 objects.
+`y`: the response variable used in the MARS model.
+`B`: The basis functions.
+`Bfuncs`: a list containing information about the basis functions.
+
+This output is then ran through as an input of the backward algorithm, bwd_stepwise() which iteratively removes variables to select the optimal subset of basis functions
+
+This output is fitted within mars() to return the final linear model fit of the MARS model.
+
+### Value
+
+The function `mars()` returns an object of class `mars`, containing the following components:
+
+`call`: the matched call.
+
+`formula`: the formula for the model
+
+`y`: the response variable.
+
+`B`: a matrix of basis functions constructed by the forward and backward stepwise procedures.
+
+`Bfuncs`: a list containing information on the basis functions.
+
+`x_names`: the names of the predictor variables.
+
+`final_fit`: the linear regression model fitted using the constructed basis functions.
+
+### Author
+
+Mathias Gausachs
+
+### References
+
+Friedman, J. H. (1991). Multivariate adaptive regression splines. The annals of statistics, 19(1), 1-67.
+
+### See Also
+
+`predict.mars()`: This function predicts the response variable based on the MARS model object and the new data given as input. It first checks if the new data is missing, and if so, uses the existing MARS model's coefficient matrix, otherwise it computes the coefficient matrix from the new data by using the MARS model's formula, B functions, and coefficients. The output is a vector of predicted values for the response variable.
+
+`anova.mars()`: This function computes and prints an ANOVA table for the MARS model object. It uses the sum of squares of the residuals, total sum of squares, and degrees of freedom to calculate the R-squared and adjusted R-squared values. The table shows the number of terms, residuals, sum of squares, R-squared, and adjusted R-squared.
+
+``plot.mars()`: This function creates a scatterplot of the observed response variable versus the fitted values obtained from the MARS model object. The y-axis label can be customized, and additional arguments can be passed to the plot function.
+
+`print.mars()`: This function prints a summary of the MARS model object. It displays the call used to create the object and the basis functions used in the model.
+
+`summary.mars()`: This function provides a more detailed summary of the MARS model object. It first displays the call used to create the object, and then provides information on the basis functions used in the model. Finally, it displays the response variable, fitted values, residuals, and the names of the predictors used in the model.
